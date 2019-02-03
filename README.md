@@ -8,4 +8,4 @@ https://arxiv.org/abs/1710.10196) using TensorFlow.
 
 256x256, cherry picked
 
-![](images/pggan_256.png)
+![](images/pggan256.png)

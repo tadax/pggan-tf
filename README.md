@@ -1,4 +1,4 @@
-# PGGAN (Progressive Growing of GANs)]
+# PGGAN (Progressive Growing of GANs)
 
 An implementation of 
 [_Karras et al., "Progressive Growing of GANs for Improved Quality, Stability, and Variation", 2017_](

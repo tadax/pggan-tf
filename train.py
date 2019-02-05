@@ -117,7 +117,7 @@ def main(args):
             outdir = os.path.join(args.output_dir, 'stage{}'.format(stage+1))
             if not os.path.exists(outdir):
                 os.mkdir(outdir)
-            dst = os.path.join(outdir, '{}.jpg'.format('{0:09d}'.format(step+1)))
+            dst = os.path.join(outdir, '{}.png'.format('{0:09d}'.format(step+1)))
             cv2.imwrite(dst, out)
 
         if int(sess.run(global_step) / 2) == sum(stage_steps[:stage+1]):
@@ -126,7 +126,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_dir', required=True)
+    parser.add_argument('--input_dir', nargs='+', required=True)
     parser.add_argument('--weights_dir', default='weights/')
     parser.add_argument('--resume', default=None)
     parser.add_argument('--log_path', default='weights/out.log')

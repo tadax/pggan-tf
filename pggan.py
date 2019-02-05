@@ -38,6 +38,7 @@ class PGGAN:
                             rgb = equalized_conv_layer(x, [1, 1, c[i], 3], 1)
                             if stage == i:
                                 rgb = rgb * alpha + shortcut * (1 - alpha)
+        rgb = tf.nn.tanh(rgb)
         return rgb
 
 

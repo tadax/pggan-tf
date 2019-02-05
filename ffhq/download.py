@@ -5,9 +5,22 @@ import os
 import argparse
 
 def download(url):
-    res = requests.get(url, timeout=10)
-    arr = np.asarray(bytearray(res.content), dtype=np.uint8)
-    img = cv2.imdecode(arr, -1)
+    try:
+        res = requests.get(url, timeout=10)
+    except KeyboardInterrupt:
+        exit()
+    except:
+        return None
+
+    if res.status_code != 200:
+        return None
+
+    try:
+        arr = np.asarray(bytearray(res.content), dtype=np.uint8)
+        img = cv2.imdecode(arr, -1)
+    except:
+        return None
+
     return img
 
 def main(args):
@@ -20,8 +33,11 @@ def main(args):
         if os.path.exists(dst):
             continue
         img = download(url)
-        cv2.imwrite(dst, img)
-        print(dst)
+        if img is None:
+            print('Failed: {}'.format(url))
+        else:
+            cv2.imwrite(dst, img)
+            print(dst)
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

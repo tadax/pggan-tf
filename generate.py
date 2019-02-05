@@ -28,7 +28,7 @@ def main(args):
         out = fake.eval(feed_dict={z: z_batch}, session=sess)[0]
         out = np.array((out + 1) * 127.5, dtype=np.uint8)
         out = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
-        dst = os.path.join(args.output_dir, '{}.jpg'.format(int(time.time() * 1000)))
+        dst = os.path.join(args.output_dir, '{}.png'.format(int(time.time() * 1000)))
         cv2.imwrite(dst, out)
         cv2.imshow('', out)
         cv2.waitKey(0)

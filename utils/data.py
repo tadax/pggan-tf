@@ -24,7 +24,9 @@ class Data:
         self.p.join()
 
     def get_paths(self):
-        paths = glob.glob(os.path.join(self.input_dir, '*'))
+        paths = []
+        for folder in args.input_dir:
+            paths += glob.glob(os.path.join(folder, '*'))
         return paths
 
     def get_size(self):

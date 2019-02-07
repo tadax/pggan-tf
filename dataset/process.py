@@ -13,16 +13,25 @@ def main(args):
         dst = os.path.join(args.output_dir, os.path.basename(path))
         if os.path.exists(dst):
             continue
-        print('{}/{} - {}'.format(i+1, len(paths), path))
         img = cv2.imread(path)
         detected = mp.align(img)
-        if detected is not None:
-            cv2.imwrite(dst, detected)
+        if detected is None:
+            print('Not detected: {}'.format(path))
+            continue
+        if min(detected.shape[:2]) < args.image_size:
+            print('Too small: {}'.format(path))
+            continue
+
+        scaled = cv2.resize(detected, (args.image_size, args.image_size),
+                            interpolation=cv2.INTER_CUBIC)
+        cv2.imwrite(dst, scaled)
+        print('{}/{} - {}'.format(i+1, len(paths), path))
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_dir', required=True)
     parser.add_argument('--output_dir', required=True)
+    parser.add_argument('--image_size', type=int, default=1024)
     parser.add_argument('--gpu', type=str)
     if parser.parse_args().gpu:
         os.environ['CUDA_VISIBLE_DEVICES'] = parser.parse_args().gpu

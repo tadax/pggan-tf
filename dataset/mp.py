@@ -53,14 +53,22 @@ class MirrorPadding:
         return img
 
     def get_landmarks(self, img):
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        h, w = img.shape[:2]
+        r = max(h, w) / 1000
+        resized = cv2.resize(img, (int(w / r), int(h / r)),
+                         interpolation=cv2.INTER_CUBIC)
+        resized = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+
         try:
-            bbs = self.detector.detect(img)[0]
+            bbs = self.detector.detect(resized)[0]
         except:
             return None
+
         if len(bbs) != 1:
             return None
-        left, top, right, bottom = [int(i) for i in bbs[0][:4]]
+
+        left, top, right, bottom = [int(i * r) for i in bbs[0][:4]]
+
         rect = dlib.rectangle(left=left, top=top, right=right, bottom=bottom)
         landmarks = np.float32([(p.x, p.y) for p in self.predictor(img, rect).parts()])
         return landmarks
@@ -78,10 +86,20 @@ class MirrorPadding:
         landmarks[:, 1] += delta_h
         landmarks[:, 0] += delta_w
 
-        e0 = np.mean(landmarks[36:42], axis=0) # right eye
-        e1 = np.mean(landmarks[42:48], axis=0) # left eye
+        e0 = (landmarks[36] + landmarks[39]) / 2 # right eye
+        e1 = (landmarks[42] + landmarks[45]) / 2 # left eye
         m0 = landmarks[48] # right mouse
         m1 = landmarks[54] # left mouse
+
+        # is frontal or not
+        threshold = 3.0
+        center = landmarks[30]
+        right = abs(center[0] - e0[0])
+        left = abs(e1[0] - center[0])
+        score = max(left, right) / min(left, right)
+        if score > threshold:
+            return None
+
         x = e1 - e0
         y = (e0 + e1) / 2 - (m0 + m1) / 2
         c = (e0 + e1) / 2 - 0.1 * y # center
@@ -100,8 +118,8 @@ class MirrorPadding:
         r = -r * 180 / np.pi
         R = cv2.getRotationMatrix2D((mirror.shape[1] / 2, mirror.shape[0] / 2), r, 1)
         mirror = cv2.warpAffine(mirror, R, (mirror.shape[1], mirror.shape[0]))
-
         mirror = mirror[top:bottom, left:right]
+
         return mirror
 
     def align(self, img):

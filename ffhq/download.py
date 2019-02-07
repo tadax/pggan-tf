@@ -5,6 +5,7 @@ import os
 from queue import Queue
 import threading
 import argparse
+
 def download(q, output_dir):
     while not q.empty():
         index, url = q.get().split('\t')

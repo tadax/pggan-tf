@@ -25,7 +25,7 @@ class Data:
 
     def get_paths(self):
         paths = []
-        for folder in args.input_dir:
+        for folder in self.input_dir:
             paths += glob.glob(os.path.join(folder, '*'))
         return paths
 

@@ -65,8 +65,16 @@ def main(args):
         saver = tf.train.Saver()
         saver.restore(sess, args.resume)
         logger.info('Resuming training')
+    if args.finetuning:
+        sess.run(global_step.assign(0))
+        logger.info('Fine-tuning')
 
-    stage_steps = [int(args.epochs * dataset_size / batch_size) for batch_size in args.batch_sizes]
+    stage_steps = [
+        int(epoch * dataset_size / batch_size) 
+        for epoch, batch_size 
+        in zip(args.epochs, args.batch_sizes)
+    ]
+
     current_stage = None
     while True:
         step = int(sess.run(global_step) / 2)
@@ -105,8 +113,8 @@ def main(args):
 
         z_batch = np.random.normal(size=[args.batch_sizes[stage], 1, 1, 512])
         _, g_loss = sess.run([g_train_op[stage], g_losses[stage]], feed_dict={z: z_batch, alpha: alp})
-
-        if (step + 1) % 1000 == 0:
+    
+        if progress % 1000 == 0:
             saver = tf.train.Saver()
             saver.save(sess, os.path.join(args.weights_dir, 'latest'), write_meta_graph=False)
 
@@ -116,12 +124,12 @@ def main(args):
             out = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
             outdir = os.path.join(args.output_dir, 'stage{}'.format(stage+1))
             os.makedirs(outdir, exist_ok=True)
-            dst = os.path.join(outdir, '{}.png'.format('{0:09d}'.format(step+1)))
+            dst = os.path.join(outdir, '{}.png'.format('{0:09d}'.format(progress)))
             cv2.imwrite(dst, out)
 
         if int(sess.run(global_step) / 2) == sum(stage_steps[:stage+1]):
+            saver = tf.train.Saver()
             saver.save(sess, os.path.join(args.weights_dir, 'stage{}'.format(stage+1)), write_meta_graph=False)
-       
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -131,7 +139,8 @@ if __name__ == '__main__':
     parser.add_argument('--log_path', default='weights/out.log')
     parser.add_argument('--output_dir', default='weights/outputs/')
     parser.add_argument('--batch_sizes', type=int, nargs='+', default=[64, 64, 64, 32, 16, 8, 4, 2, 1])
-    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--epochs', type=int, nargs='+', default=[0, 0, 32, 32, 32, 32, 32, 32, 32])
+    parser.add_argument('--finetuning', action='store_true', default=False)
     parser.add_argument('--gpu', type=str, default='0')
     os.environ['CUDA_VISIBLE_DEVICES'] = parser.parse_args().gpu
     main(parser.parse_args())

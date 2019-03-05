@@ -115,8 +115,7 @@ def main(args):
             out = np.array((out[0] + 1) * 127.5, dtype=np.uint8)
             out = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
             outdir = os.path.join(args.output_dir, 'stage{}'.format(stage+1))
-            if not os.path.exists(outdir):
-                os.mkdir(outdir)
+            os.makedirs(outdir, exist_ok=True)
             dst = os.path.join(outdir, '{}.png'.format('{0:09d}'.format(step+1)))
             cv2.imwrite(dst, out)
 
@@ -132,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_path', default='weights/out.log')
     parser.add_argument('--output_dir', default='weights/outputs/')
     parser.add_argument('--batch_sizes', type=int, nargs='+', default=[64, 64, 64, 32, 16, 8, 4, 2, 1])
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--gpu', type=str, default='0')
     os.environ['CUDA_VISIBLE_DEVICES'] = parser.parse_args().gpu
     main(parser.parse_args())

@@ -9,3 +9,7 @@ https://arxiv.org/abs/1710.10196) using TensorFlow.
 256x256, cherry picked
 
 ![](images/pggan256.png)
+
+512x512, cherry picked
+
+![](images/pggan512.png)

@@ -139,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_path', default='weights/out.log')
     parser.add_argument('--output_dir', default='weights/outputs/')
     parser.add_argument('--batch_sizes', type=int, nargs='+', default=[64, 64, 64, 32, 16, 8, 4, 2, 1])
-    parser.add_argument('--epochs', type=int, nargs='+', default=[0, 0, 32, 32, 32, 32, 32, 32, 32])
+    parser.add_argument('--epochs', type=int, nargs='+', default=[0, 0, 60, 60, 60, 60, 90, 120, 150])
     parser.add_argument('--finetuning', action='store_true', default=False)
     parser.add_argument('--gpu', type=str, default='0')
     os.environ['CUDA_VISIBLE_DEVICES'] = parser.parse_args().gpu

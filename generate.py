@@ -38,6 +38,6 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, required=True)
     parser.add_argument('--stage', type=int, required=True)
     parser.add_argument('--output_dir', required=True)
-    parser.add_argument('--gpu', type=str, default='0')
+    parser.add_argument('--gpu', type=str, default='-1')
     os.environ['CUDA_VISIBLE_DEVICES'] = parser.parse_args().gpu
     main(parser.parse_args())
